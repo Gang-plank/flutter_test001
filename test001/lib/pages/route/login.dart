@@ -1,88 +1,151 @@
-import 'package:flutter/material.dart';
-import 'package:base_library/base_library.dart';
-import 'package:test001/config/models.dart';
-import 'package:test001/config/user_repository.dart';
 
-class LoginPage extends StatelessWidget {
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test001/config/models.dart';
+
+class LoginPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: <Widget>[
-          Image.asset(
-            Util.getImgPath("begin"), //登录页背景图
-            package: BaseConstant.packageBase,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          new LoginBody()
-        ],
-      ),
-    );
-  }
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginBody extends StatelessWidget {
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController _controllerPhone = new TextEditingController();
+  TextEditingController _controllerPwd = new TextEditingController();
+
+  Future _loginReq() async {
+    Dio dio = Dio();
+
+    dio.options..baseUrl = 'http://10.0.3.2:5000';
+
+    try {
+      // 发起请求
+      Response response = await dio.post('/user/login',
+          data: FormData.fromMap({
+            "phone": _controllerPhone.text.trim(),
+            "password": _controllerPwd.text.trim(),
+          }));
+
+      if (response.statusCode == 200) {
+        UserEntity user = UserEntity.fromJson(response.data);
+        if (user.errorCode == 0) {
+          //登录成功后 保存信息
+          Fluttertoast.showToast(msg: "登录成功");
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('userPhone',user.data.phone);
+          Future.delayed(Duration(seconds: 1), () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/NavigationBar', (Route<dynamic> route) => false);
+          });
+        } else {
+          Fluttertoast.showToast(msg: '登录失败：${user.errorMsg}');
+        }
+      } else {
+        Fluttertoast.showToast(msg: '网络请求异常：${response.statusCode}');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "无网络连接");
+    }
+  }
+
+  void _login() {
+    String phone = _controllerPhone.text;
+    String password = _controllerPwd.text;
+    if (phone.isEmpty || phone.length < 10) {
+      Fluttertoast.showToast(
+        msg: "请输入正确的手机号",
+      );
+      return;
+    }
+    if (password.isEmpty || password.length < 6) {
+      Fluttertoast.showToast(msg: "请输入密码");
+      return;
+    }
+    _loginReq();
+  }
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController _controllerPhone = new TextEditingController();
-    TextEditingController _controllerPwd = new TextEditingController();
-    UserRepository userRepository = new UserRepository();
+    //登录框
+    final phone = TextFormField(
+      controller: _controllerPhone,
+      keyboardType: TextInputType.phone,
+      autofocus: false,
+      decoration: InputDecoration(
+          icon: Icon(Icons.phone,color: Colors.grey),
+          hintText: '手机号',
+          contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
+          border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black26)),
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black))),
+    );
 
-    UserModel userModel =
-        SpUtil.getObj(BaseConstant.keyUserModel, (v) => UserModel.fromJson(v));
-    _controllerPhone.text = userModel?.phone ?? "";
+    //密码框
+    final password = TextFormField(
+      controller: _controllerPwd,
+      autofocus: false,
+      obscureText: true,
+      decoration: InputDecoration(
+          icon: Icon(Icons.lock,color: Colors.grey),
+          hintText: '密码',
+          contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
+          border: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black26)),
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black))),
+    );
+    //登录按钮
+    final loginButton = Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        onPressed: () {
+          //跳路由
+          _login();
+        },
+        padding: EdgeInsets.all(12),
+        color: Colors.blue,
+        child: Text('登录', style: TextStyle(color: Colors.white)),
+      ),
+    );
 
-    void _userLogin() {
-      String phone = _controllerPhone.text;
-      String password = _controllerPwd.text;
-      if (phone.isEmpty || phone.length != 11) {
-        Util.showSnackBar(context, phone.isEmpty ? "请输入手机号" : "请输入正确的手机号");
-        return;
-      }
-      if (password.isEmpty || password.length < 6) {
-        Util.showSnackBar(context, phone.isEmpty ? "请输入密码" : "密码至少6位");
-        return;
-      }
-
-      LoginReq req = new LoginReq(phone, password);
-      userRepository.login(req);
-    }
-
-    return new Column(
-      children: <Widget>[
-        new Expanded(child: new Container()),
-        new Expanded(
-            child: new Container(
-          margin: EdgeInsets.only(left: 20, top: 15, right: 20),
-          child: new Column(
-            children: <Widget>[
-              LoginItem(
-                controller: _controllerPhone,
-                prefixIcon: Icons.person,
-                hintText: "手机号",
-              ),
-              Gaps.vGap15,
-              LoginItem(
-                controller: _controllerPwd,
-                prefixIcon: Icons.lock,
-                hasSuffixIcon: true,
-                hintText: "密码",
-              ),
-              new RoundButton(
-                bgColor: Colors.blueGrey,
-                text: "登录",
-                margin: EdgeInsets.only(top: 20),
-                onPressed: () {
-                  _userLogin();
-                },
-              ),
-            ],
-          ),
-        )),
-      ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: new AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          '',
+          style: TextStyle(color: Colors.black),
+        ),
+        centerTitle: false,
+      ),
+      body: Center(
+        child: ListView(
+          padding: EdgeInsets.only(left: 24.0, right: 24.0, top: 20.0),
+          children: <Widget>[
+            new Text(
+              "登录",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 50.0,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 48.0),
+            phone,
+            SizedBox(height: 28.0),
+            password,
+            SizedBox(height: 24.0),
+            loginButton,
+          ],
+        ),
+      ),
     );
   }
 }

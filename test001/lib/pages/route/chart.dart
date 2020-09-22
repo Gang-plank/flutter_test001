@@ -13,12 +13,12 @@ class HistoricalTestData {
 
 class LineChart extends StatelessWidget {
   final data = [
-    new HistoricalTestData(new DateTime(2020,7,15), 12),
-    new HistoricalTestData(new DateTime(2020,7,25), 15),
-    new HistoricalTestData(new DateTime(2020,8,1), 19),
-    new HistoricalTestData(new DateTime(2020,8,10), 14),
-    new HistoricalTestData(new DateTime(2020,8,25), 26),
-    new HistoricalTestData(new DateTime(2020,9,8), 58),
+    new HistoricalTestData(new DateTime(2020, 7, 15), 12),
+    new HistoricalTestData(new DateTime(2020, 7, 25), 15),
+    new HistoricalTestData(new DateTime(2020, 8, 1), 19),
+    new HistoricalTestData(new DateTime(2020, 8, 10), 14),
+    new HistoricalTestData(new DateTime(2020, 8, 25), 26),
+    new HistoricalTestData(new DateTime(2020, 9, 8), 58),
   ];
 
   _getSeriesData() {
@@ -36,10 +36,9 @@ class LineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children:<Widget>[
-       Container(
-        height: 300,
+    return Column(children: <Widget>[
+      Container(
+        height: MediaQuery.of(context).size.width*0.6,
         padding: EdgeInsets.all(10),
         child: Card(
           child: Padding(
@@ -61,7 +60,6 @@ class LineChart extends StatelessWidget {
           ),
         ),
       ),
-      ]
-    );
+    ]);
   }
 }

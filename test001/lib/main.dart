@@ -1,31 +1,26 @@
-import 'package:base_library/base_library.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'config/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test001/config/models.dart';
 import 'pages/navigationbar.dart';
 import 'pages/route/begin.dart';
 import 'package:camera/camera.dart';
-import 'package:dio/dio.dart';
 
 List<CameraDescription> cameras = [];
 
-/* void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await SpUtil.getInstance();
-  cameras = await availableCameras();
-  runApp(MyApp());
-} */
-
+String phone='';
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    await SpUtil.getInstance();
     cameras = await availableCameras();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    phone = prefs.getString('userPhone'); 
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }
   runApp(MyApp());
 }
-
 
 class MyApp extends StatefulWidget {
   @override
@@ -33,47 +28,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-    @override
+  @override
   void initState() {
     super.initState();
-    setInitDir(initStorageDir: true);
-    init();
-  }
-
-  void init() {
-    //    DioUtil.openDebug();
-    Options options = DioUtil.getDefOptions();
-    options.baseUrl = Constant.server_address;
-    String cookie = SpUtil.getString(BaseConstant.keyAppToken);
-    if (ObjectUtil.isNotEmpty(cookie)) {
-      Map<String, dynamic> _headers = new Map();
-      _headers["Cookie"] = cookie;
-      options.headers = _headers;
-    }
-    HttpConfig config = new HttpConfig(options: options);
-    DioUtil().setConfig(config);
   }
 
   @override
   Widget build(BuildContext context) {
-    LogUtil.e("sp is init ${SpUtil.isInitialized()}");
     return MaterialApp(
       routes: {
-        BaseConstant.routeMain: (ctx) => NavigationBar(),
-        BaseConstant.routeLogin: (ctx) => BeginPage(),
+        "/NavigationBar": (context) => NavigationBar(),
+        "/BeginPage": (context) => BeginPage(),
       },
       title: 'Flutter Demo',
-      theme: new ThemeData(
-        primaryColor:Colors.white
-      ),
-
-      home:/* NavigationBar(),  */Util.isLogin() ? NavigationBar():BeginPage(),
+      theme: new ThemeData(primaryColor: Colors.white),
+      home: phone == null ? BeginPage() : NavigationBar()
     );
   }
 }
-
-
 
 void logError(String code, String message) =>
     print('Error: $code\nError Message: $message');

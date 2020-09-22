@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import '../route/test.dart';
-
-
-
+import 'package:test001/pages/route/voice_test.dart';
+import '../route/video_test.dart';
 
 class StartTestPage extends StatefulWidget {
   @override
@@ -24,23 +22,48 @@ class _StartTestPageState extends State<StartTestPage> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        SizedBox(
-          width: 100,
-          height: 100,
-          child: RaisedButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return CameraExampleHome();
-              }));
-            },
-            padding: const EdgeInsets.all(20),
-            shape: CircleBorder(),
-            child: Text(
-              "开始测试",
-              style: TextStyle(fontSize: 10),
-            ),
-          ),
-        )
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return VoiceTestPage();
+                    }));
+                  },
+                  color: Colors.blue,
+                  padding: const EdgeInsets.all(20),
+                  shape: CircleBorder(),
+                  child: Text(
+                    "开始语音测试",
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: RaisedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return CameraExampleHome();
+                    }));
+                  },
+                  color: Colors.blue,
+                  padding: const EdgeInsets.all(20),
+                  shape: CircleBorder(),
+                  child: Text(
+                    "开始视频测试",
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ),
+              ),
+            ])
       ],
     );
   }

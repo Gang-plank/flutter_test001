@@ -35,11 +35,9 @@ dependencies:
   path: ^1.7.0
   provider: ^4.3.2+2
   camera: ^0.5.8+5
-  #更新的redart可能不支持observable
-  rxdart: ^0.22.6   
+  dio: ^3.0.10
+  flutter_plugin_record: ^0.2.5
 
-  base_library:
-      path: ../base_library/
 
 
 dev_dependencies:
@@ -63,7 +61,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - images/
-    - packages/base_library/assets/begin.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:test001/config/constant.dart';
 import 'tabs/home.dart';
 import 'tabs/mine.dart';
 import 'tabs/starttest.dart';
 
-
 const IconFont = "appIconFont";
-
 
 class NavigationBar extends StatefulWidget {
   @override
@@ -15,46 +14,42 @@ class NavigationBar extends StatefulWidget {
 }
 
 class _NavigationBarState extends State<NavigationBar>
-    with AutomaticKeepAliveClientMixin {  //切换页面后不会清除上一个页面的缓存
-  int _currentIndex = 0;   //当前是第几个导航item
+    with AutomaticKeepAliveClientMixin {
+  //切换页面后不会清除上一个页面的缓存
+  int _currentIndex = 0; //当前是第几个导航item
   DateTime _lastPressedTime; //给上次点击返回计时
 
-  final PageController _controller = PageController(
+  PageController _controller = PageController(
     initialPage: 0,
   );
 
   @override
-  Widget build(BuildContext context) {  
-  super.build(context);
+  Widget build(BuildContext context) {
+    super.build(context);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
       statusBarColor: Colors.transparent,
     ));
     return Scaffold(
-
       appBar: AppBar(title: Text('demo')),
-
       body: WillPopScope(
-          onWillPop: () {   //导航返回拦截-----
+          onWillPop: () {
+            //导航返回拦截-----
             if (_lastPressedTime == null ||
                 DateTime.now().difference(_lastPressedTime) >
                     Duration(seconds: 1)) {
               Fluttertoast.showToast(
-                fontSize: 16.0,
                 msg: "再按一次退出程序",
-                toastLength: Toast.LENGTH_SHORT,
-                timeInSecForIosWeb: 1,
-                textColor: Colors.white,
-                backgroundColor: Colors.grey,
-                gravity: ToastGravity.BOTTOM,
               );
               _lastPressedTime = DateTime.now();
               return Future.value(false);
             }
             return Future.value(true);
-          },              //导航返回拦截-----
+          }, //导航返回拦截-----
 
-          child: PageView(   //可滚动列表组件，默认横向
-            physics: NeverScrollableScrollPhysics(),  //ban了用户滑动界面来切换，只能点击底部导航item
+          child: PageView(
+            //可滚动列表组件，默认横向
+            physics:
+                NeverScrollableScrollPhysics(), //ban了用户滑动界面来切换，只能点击底部导航item
             controller: _controller,
             children: <Widget>[
               HomePage(),
@@ -62,18 +57,21 @@ class _NavigationBarState extends State<NavigationBar>
               MyPage(),
             ],
           )),
-
-      bottomNavigationBar: BottomNavigationBar(    //导航栏
+      bottomNavigationBar: BottomNavigationBar(
+          //导航栏
           currentIndex: _currentIndex,
+          backgroundColor: Color(BG_COLOR),
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: Colors.green,
+          type: BottomNavigationBarType.fixed,
           onTap: (index) {
-            _controller.animateToPage(index,     //滑动的动画效果
-                duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+            _controller.animateToPage(index, //滑动的动画效果
+                duration: Duration(milliseconds: 400),
+                curve: Curves.easeInOut);
             setState(() {
               _currentIndex = index;
             });
           },
-          backgroundColor: Colors.grey[100],
-          type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),

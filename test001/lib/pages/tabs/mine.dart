@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/constant.dart';
-import '../route/My_Info.dart';
+import '../route/my_Info.dart';
 import '../route/history.dart';
-import 'package:base_library/base_library.dart';
 
 class MineModel {
   String assets;
@@ -20,7 +20,7 @@ class MineApi {
     _mineModels.add(MineModel(
         assets: "images/history.png", title: "历史记录", isDownDivider: true));
     _mineModels.add(MineModel(
-        assets: "images/exit.png", title: "退出登录", isDownDivider: false));
+        assets: "images/exit.png", title: "退出登录", isDownDivider: true));
     return _mineModels;
   }
 }
@@ -43,20 +43,24 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> list = [];
-    list.add(_mineAccountItem());
+    list.add(_mineAccountItem()); //头部，头像那部分
     list.add(Container(
+      //头部与下面选项的背景色部分
       height: 10,
       color: Color(BG_COLOR),
     ));
     _mineModels.forEach((o) {
+      //每个选项，逐一构建
       list.add(_mineItem(assets: o.assets, title: o.title));
       if (o.isDownDivider) {
         list.add(Container(
+          //选项间的背景色部分
           height: 10,
           color: Color(BG_COLOR),
         ));
       } else {
         list.add(Divider(
+          //选项间的横线
           height: 1,
           color: Colors.grey[400],
           indent: 60,
@@ -64,7 +68,9 @@ class _MyPageState extends State<MyPage> {
       }
     });
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Container(
+        height: double.maxFinite,
+        color: Color(BG_COLOR),
         child: Column(
           children: list,
         ),
@@ -73,8 +79,10 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _mineItem({String assets, String title}) {
+    //各个选项
     return InkWell(
       child: Container(
+        color: Colors.white,
         width: double.maxFinite,
         padding: EdgeInsets.only(bottom: 7, top: 7),
         child: Row(
@@ -85,6 +93,7 @@ class _MyPageState extends State<MyPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
+                  //这个container装图标
                   padding:
                       EdgeInsets.only(left: 10, right: 20, bottom: 7, top: 7),
                   child: Image.asset(
@@ -94,6 +103,7 @@ class _MyPageState extends State<MyPage> {
                   ),
                 ),
                 Container(
+                  //这个container装文字
                   child: Text(
                     title,
                     style: TextStyle(
@@ -105,6 +115,7 @@ class _MyPageState extends State<MyPage> {
               ],
             ),
             Container(
+              //这个container装箭头
               padding: EdgeInsets.only(right: 10, left: 8),
               child: Icon(
                 Icons.arrow_forward_ios,
@@ -115,7 +126,7 @@ class _MyPageState extends State<MyPage> {
           ],
         ),
       ),
-      onTap: () {
+      onTap: () async {
         switch (title) {
           case '个人信息':
             {
@@ -127,19 +138,16 @@ class _MyPageState extends State<MyPage> {
           case '历史记录':
             {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return Historypage();
+                return HistoryPage();
               }));
             }
             break;
           case '退出登录':
             {
-              if (Util.isLogin()) {
-                SpUtil.remove(BaseConstant.keyAppToken);
-                setState(() {});
-              } else {
-                RouteUtil.goLogin(context);
-              }
-              Navigator.of(context).pushNamedAndRemoveUntil(BaseConstant.routeLogin, (Route<dynamic> route) => false);
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove('userPhone');
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/BeginPage', (Route<dynamic> route) => false);
             }
             break;
         }

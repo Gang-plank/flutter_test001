@@ -68,6 +68,7 @@ class _BeginPageState extends State<BeginPage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: buttons,
         )
+        
       ],
     );
   }

@@ -36,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
           Fluttertoast.showToast(msg: "登录成功");
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('userPhone',user.data.phone);
+          prefs.setString('user', jsonEncode(user.data));
           Future.delayed(Duration(seconds: 1), () {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/NavigationBar', (Route<dynamic> route) => false);

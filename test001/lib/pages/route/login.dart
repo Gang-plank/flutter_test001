@@ -32,11 +32,18 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         UserEntity user = UserEntity.fromJson(response.data);
         if (user.errorCode == 0) {
+
           //登录成功后 保存信息
-          Fluttertoast.showToast(msg: "登录成功");
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('userPhone',user.data.phone);
-          prefs.setString('user', jsonEncode(user.data));
+          prefs.setString('user', jsonEncode(user.data.toJson()));
+         /*  print(prefs.getString('user'));
+          print(jsonDecode(prefs.getString('user')));
+          UserData testm=UserData.fromJson(jsonDecode(prefs.getString('user')));
+          print(testm.phone); *///测试代码
+
+          Fluttertoast.showToast(msg: "登录成功");
+          
           Future.delayed(Duration(seconds: 1), () {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/NavigationBar', (Route<dynamic> route) => false);

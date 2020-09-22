@@ -24,37 +24,33 @@ class UserEntity {
 
 class UserData {
 	String password;
-	String publicName;
-	String icon;
-	String nickname;
-	bool admin;
 	String phone;
 	String token;
 	String username;
+  String avatar;
+  String gender;
+  DateTime birthday;
 
-	UserData({this.password, this.publicName,  this.icon, this.nickname, this.admin,this.phone, this.token, this.username});
+	UserData();
 
 	UserData.fromJson(Map<String, dynamic> json) {
 		password = json['password'];
-		publicName = json['publicName'];
-		icon = json['icon'];
-		nickname = json['nickname'];
-		admin = json['admin'];
 		phone = json['phone'];
 		token = json['token'];
 		username = json['username'];
+    avatar=json['avatar'];
+    gender=json['gender'];
+    birthday=json['birthday'];
 	}
 
-	Map<String, dynamic> toJson() {
-		final Map<String, dynamic> data = new Map<String, dynamic>();
-		data['password'] = this.password;
-		data['publicName'] = this.publicName;
-		data['icon'] = this.icon;
-		data['nickname'] = this.nickname;
-		data['admin'] = this.admin;
-		data['phone'] = this.phone;
-		data['token'] = this.token;
-		data['username'] = this.username;
-		return data;
-	}
+	Map<String, dynamic> toJson() =>{
+    'password':password,
+    'phone':phone,
+    'token':token,
+    'username':username,
+    'avatar':avatar,
+    'gender':gender,
+    'birthday':birthday,
+
+	};
 }

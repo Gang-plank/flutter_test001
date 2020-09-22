@@ -36,13 +36,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
       routes: {
+        '/': (context) => phone==null?BeginPage():NavigationBar(),
         "/NavigationBar": (context) => NavigationBar(),
         "/BeginPage": (context) => BeginPage(),
       },
       title: 'Flutter Demo',
       theme: new ThemeData(primaryColor: Colors.white),
-      home: phone == null ? BeginPage() : NavigationBar()
+     // home: phone == null ? BeginPage() : NavigationBar()
     );
   }
 }

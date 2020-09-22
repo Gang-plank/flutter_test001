@@ -152,6 +152,7 @@ class _MyPageState extends State<MyPage> {
             {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               prefs.remove('userPhone');
+              prefs.remove('user');
               Navigator.of(context).pushNamedAndRemoveUntil(
                   '/BeginPage', (Route<dynamic> route) => false);
             }

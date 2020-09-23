@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:test001/config/constant.dart';
+import 'package:test001/common/global.dart';
 import 'tabs/home.dart';
 import 'tabs/mine.dart';
 import 'tabs/starttest.dart';

@@ -1,11 +1,13 @@
-
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test001/common/global.dart';
 import 'package:test001/config/models.dart';
+
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -32,18 +34,19 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         UserEntity user = UserEntity.fromJson(response.data);
         if (user.errorCode == 0) {
-
           //登录成功后 保存信息
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('userPhone',user.data.phone);
+          prefs.setString('userPhone', user.data.phone);
           prefs.setString('user', jsonEncode(user.data.toJson()));
-         /*  print(prefs.getString('user'));
+          currentUser=user.data;
+          print(currentUser.username);
+          /*  print(prefs.getString('user'));
           print(jsonDecode(prefs.getString('user')));
           UserData testm=UserData.fromJson(jsonDecode(prefs.getString('user')));
-          print(testm.phone); *///测试代码
+          print(testm.phone); */ //测试代码
 
           Fluttertoast.showToast(msg: "登录成功");
-          
+
           Future.delayed(Duration(seconds: 1), () {
             Navigator.of(context).pushNamedAndRemoveUntil(
                 '/NavigationBar', (Route<dynamic> route) => false);
@@ -83,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
       keyboardType: TextInputType.phone,
       autofocus: false,
       decoration: InputDecoration(
-          icon: Icon(Icons.phone,color: Colors.grey),
+          icon: Icon(Icons.phone, color: Colors.grey),
           hintText: '手机号',
           contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
           border: UnderlineInputBorder(
@@ -98,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
       autofocus: false,
       obscureText: true,
       decoration: InputDecoration(
-          icon: Icon(Icons.lock,color: Colors.grey),
+          icon: Icon(Icons.lock, color: Colors.grey),
           hintText: '密码',
           contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
           border: UnderlineInputBorder(

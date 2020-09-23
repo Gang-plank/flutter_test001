@@ -54,7 +54,7 @@ class _NavigationBarState extends State<NavigationBar>
             children: <Widget>[
               HomePage(),
               StartTestPage(),
-              MyPage(),
+              MinePage(),
             ],
           )),
       bottomNavigationBar: BottomNavigationBar(

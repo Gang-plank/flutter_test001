@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test001/config/models.dart';
 import '../../config/constant.dart';
 import '../route/my_Info.dart';
 import '../route/history.dart';
@@ -25,24 +28,18 @@ class MineApi {
   }
 }
 
-class MyPage extends StatefulWidget {
+class MinePage extends StatefulWidget {
   @override
-  _MyPageState createState() => _MyPageState();
+  _MinePageState createState() => _MinePageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class _MinePageState extends State<MinePage> {
   List<MineModel> _mineModels = [];
-  SharedPreferences _prefs;
-
-  void _getInstance() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
 
   @override
   void initState() {
     /// 模拟初始化数据
     super.initState();
-    _getInstance();
     _mineModels.addAll(MineApi.mock());
   }
 

@@ -32,17 +32,11 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   List<MineModel> _mineModels = [];
-  SharedPreferences _prefs;
-
-  void _getInstance() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
 
   @override
   void initState() {
     /// 模拟初始化数据
     super.initState();
-    _getInstance();
     _mineModels.addAll(MineApi.mock());
   }
 

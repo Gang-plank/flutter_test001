@@ -25,7 +25,6 @@ class UserEntity {
 class UserData {
 	String password;
 	String phone;
-	String token;
 	String username;
   String avatar;
   String gender;
@@ -36,7 +35,6 @@ class UserData {
 	UserData.fromJson(Map<String, dynamic> json) {
 		password = json['password'];
 		phone = json['phone'];
-		token = json['token'];
 		username = json['username'];
     avatar=json['avatar'];
     gender=json['gender'];
@@ -46,7 +44,6 @@ class UserData {
 	Map<String, dynamic> toJson() =>{
     'password':password,
     'phone':phone,
-    'token':token,
     'username':username,
     'avatar':avatar,
     'gender':gender,

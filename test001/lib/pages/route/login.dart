@@ -63,15 +63,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login() {
-    String phone = _controllerPhone.text;
-    String password = _controllerPwd.text;
-    if (phone.isEmpty || phone.length < 10) {
+    String _phone = _controllerPhone.text;
+    String _password = _controllerPwd.text;
+    if (_phone.isEmpty || _phone.length < 10) {
       Fluttertoast.showToast(
         msg: "请输入正确的手机号",
       );
       return;
     }
-    if (password.isEmpty || password.length < 6) {
+    if (_password.isEmpty || _password.length < 6) {
       Fluttertoast.showToast(msg: "请输入密码");
       return;
     }

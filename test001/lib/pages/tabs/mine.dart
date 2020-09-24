@@ -134,7 +134,7 @@ class _MinePageState extends State<MinePage> {
           case '个人信息':
             {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return MyInfopage();
+                return MyInfoPage();
               }));
             }
             break;

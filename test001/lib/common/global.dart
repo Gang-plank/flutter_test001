@@ -11,5 +11,5 @@ const int BG_COLOR = 0xffededed;
 
 List<CameraDescription> cameras = [];
 
-String phone = '';
+String checkLogin = '';
 UserData currentUser;

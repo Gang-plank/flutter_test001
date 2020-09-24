@@ -75,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     //昵称框
-    final username = TextFormField(
+    final _usernameWidget = TextFormField(
       controller: _controllerUsername,
       autofocus: false,
       decoration: InputDecoration(
@@ -89,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
     //登录框
-    final phone = TextFormField(
+    final _phoneWidget = TextFormField(
       controller: _controllerPhone,
       keyboardType: TextInputType.phone,
       autofocus: false,
@@ -105,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     //密码框
-    final password = TextFormField(
+    final _passwordWidget = TextFormField(
       controller: _controllerPwd,
       autofocus: false,
       obscureText: true,
@@ -120,7 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     //确认密码框
-    final rePassword = TextFormField(
+    final _rePasswordWidget = TextFormField(
       controller: _controllerRePwd,
       autofocus: false,
       obscureText: true,
@@ -176,13 +176,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 30.0),
-            username,
+            _usernameWidget,
             SizedBox(height: 28.0),
-            phone,
+            _phoneWidget,
             SizedBox(height: 28.0),
-            password,
+            _passwordWidget,
             SizedBox(height: 28.0),
-            rePassword,
+            _rePasswordWidget,
             SizedBox(height: 24.0),
             registerButton,
           ],

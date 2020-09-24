@@ -13,10 +13,10 @@ Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    phone = prefs.getString('userPhone');
-    if (phone != null) {
+    checkLogin = prefs.getString('userPhone');
+    if (checkLogin != null) {
       currentUser = UserData.fromJson(jsonDecode(prefs.getString('user')));
-      print(currentUser.username);
+      print(currentUser.toJson());
     }
   } on CameraException catch (e) {
     logError(e.code, e.description);
@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => phone == null ? BeginPage() : NavigationBar(),
+        '/': (context) => checkLogin == null ? BeginPage() : NavigationBar(),
         "/NavigationBar": (context) => NavigationBar(),
         "/BeginPage": (context) => BeginPage(),
       },

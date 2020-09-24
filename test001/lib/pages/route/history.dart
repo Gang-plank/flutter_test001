@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class HistoryPage extends StatefulWidget {
   @override
   _HistoryPageState createState() => _HistoryPageState();
@@ -10,13 +9,16 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-    Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.all(10),
-      child: Card(child: Text('日期  分数',style: TextStyle(fontSize:20),)
+      body: Container(
+        width: double.maxFinite,
+        padding: EdgeInsets.all(10),
+        child: Card(
+            child: Text(
+          '日期  分数',
+          style: TextStyle(fontSize: 20),
+        )),
       ),
-    ),);
+    );
   }
 }
 

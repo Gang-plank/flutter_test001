@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../config/constant.dart';
+import 'package:test001/common/global.dart';
+import 'package:test001/config/models.dart';
 import '../route/my_Info.dart';
 import '../route/history.dart';
 
@@ -25,12 +28,12 @@ class MineApi {
   }
 }
 
-class MyPage extends StatefulWidget {
+class MinePage extends StatefulWidget {
   @override
-  _MyPageState createState() => _MyPageState();
+  _MinePageState createState() => _MinePageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class _MinePageState extends State<MinePage> {
   List<MineModel> _mineModels = [];
 
   @override
@@ -131,7 +134,7 @@ class _MyPageState extends State<MyPage> {
           case '个人信息':
             {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return MyInfopage();
+                return MyInfoPage();
               }));
             }
             break;
@@ -182,7 +185,7 @@ class _MyPageState extends State<MyPage> {
               Container(
                 padding: EdgeInsets.only(bottom: 8),
                 child: Text(
-                  'Me', //用户昵称
+                  currentUser.username, //用户昵称
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -195,7 +198,7 @@ class _MyPageState extends State<MyPage> {
                     Container(
                       padding: EdgeInsets.only(right: 40),
                       child: Text(
-                        'this is userID', //用户ID
+                        currentUser.phone, //用户ID
                         style: TextStyle(color: Colors.grey, fontSize: 17),
                       ),
                     ),

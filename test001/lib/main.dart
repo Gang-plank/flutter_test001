@@ -2,20 +2,22 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test001/common/global.dart';
 import 'package:test001/config/models.dart';
 import 'pages/navigationbar.dart';
 import 'pages/route/begin.dart';
 import 'package:camera/camera.dart';
 
-List<CameraDescription> cameras = [];
-
-String phone='';
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    phone = prefs.getString('userPhone'); 
+    checkLogin = prefs.getString('userPhone');
+    if (checkLogin != null) {
+      currentUser = UserData.fromJson(jsonDecode(prefs.getString('user')));
+      print(currentUser.toJson());
+    }
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }
@@ -38,13 +40,13 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => phone==null?BeginPage():NavigationBar(),
+        '/': (context) => checkLogin == null ? BeginPage() : NavigationBar(),
         "/NavigationBar": (context) => NavigationBar(),
         "/BeginPage": (context) => BeginPage(),
       },
       title: 'Flutter Demo',
       theme: new ThemeData(primaryColor: Colors.white),
-     // home: phone == null ? BeginPage() : NavigationBar()
+      // home: phone == null ? BeginPage() : NavigationBar()
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:test001/common/global.dart';
 import '../../main.dart';
 
 /// 获取不同摄像头的图标（前置、后置、其它）

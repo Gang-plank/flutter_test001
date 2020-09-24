@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:test001/config/constant.dart';
+import 'package:test001/common/global.dart';
 import 'tabs/home.dart';
 import 'tabs/mine.dart';
 import 'tabs/starttest.dart';
@@ -13,8 +13,7 @@ class NavigationBar extends StatefulWidget {
   _NavigationBarState createState() => _NavigationBarState();
 }
 
-class _NavigationBarState extends State<NavigationBar>
-    with AutomaticKeepAliveClientMixin {
+class _NavigationBarState extends State<NavigationBar>{
   //切换页面后不会清除上一个页面的缓存
   int _currentIndex = 0; //当前是第几个导航item
   DateTime _lastPressedTime; //给上次点击返回计时
@@ -25,7 +24,6 @@ class _NavigationBarState extends State<NavigationBar>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
       statusBarColor: Colors.transparent,
     ));
@@ -54,7 +52,7 @@ class _NavigationBarState extends State<NavigationBar>
             children: <Widget>[
               HomePage(),
               StartTestPage(),
-              MyPage(),
+              MinePage(),
             ],
           )),
       bottomNavigationBar: BottomNavigationBar(
@@ -94,7 +92,4 @@ class _NavigationBarState extends State<NavigationBar>
     super.dispose();
     _controller.dispose();
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

@@ -28,7 +28,7 @@ class UserData {
 	String username;
   String avatar;
   String gender;
-  DateTime birthday;
+  String birthday;
 
 	UserData();
 

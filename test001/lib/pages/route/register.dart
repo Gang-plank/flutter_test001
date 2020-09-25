@@ -1,5 +1,3 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -24,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // 发起请求
       Response response = await dio.post('/user/register',
           data: FormData.fromMap({
-            "username":_controllerUsername.text.trim(),
+            "username": _controllerUsername.text.trim(),
             "phone": _controllerPhone.text.trim(),
             "password": _controllerPwd.text.trim(),
           }));
@@ -48,24 +46,24 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _register() {
-    String phone = _controllerPhone.text;
-    String password = _controllerPwd.text;
-    String rePassword = _controllerRePwd.text;
-    if (phone.isEmpty || phone.length < 10) {
+    String _phone = _controllerPhone.text;
+    String _password = _controllerPwd.text;
+    String _rePassword = _controllerRePwd.text;
+    if (_phone.isEmpty || _phone.length < 10 || _phone.length > 15) {
       Fluttertoast.showToast(
         msg: "请输入正确的手机号",
       );
       return;
     }
-    if (password.isEmpty || password.length < 6) {
+    if (_password.isEmpty || _password.length < 6) {
       Fluttertoast.showToast(msg: "密码至少6位");
       return;
     }
-    if (rePassword.isEmpty || rePassword.length < 6) {
+    if (_rePassword.isEmpty || _rePassword.length < 6) {
       Fluttertoast.showToast(msg: "确认密码");
       return;
     }
-    if (password != rePassword) {
+    if (_password != _rePassword) {
       Fluttertoast.showToast(msg: "密码不一致");
       return;
     }
@@ -79,7 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
       controller: _controllerUsername,
       autofocus: false,
       decoration: InputDecoration(
-        icon: Icon(Icons.person,color: Colors.grey),
+        icon: Icon(Icons.person, color: Colors.grey),
         hintText: '昵称',
         contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
         border:
@@ -94,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
       keyboardType: TextInputType.phone,
       autofocus: false,
       decoration: InputDecoration(
-        icon: Icon(Icons.phone,color: Colors.grey),
+        icon: Icon(Icons.phone, color: Colors.grey),
         hintText: '手机号',
         contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
         border:
@@ -110,7 +108,10 @@ class _RegisterPageState extends State<RegisterPage> {
       autofocus: false,
       obscureText: true,
       decoration: InputDecoration(
-          icon: Icon(Icons.lock_open,color: Colors.grey,),
+          icon: Icon(
+            Icons.lock_open,
+            color: Colors.grey,
+          ),
           hintText: '密码',
           contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
           border: UnderlineInputBorder(
@@ -125,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
       autofocus: false,
       obscureText: true,
       decoration: InputDecoration(
-          icon: Icon(Icons.lock_outline,color: Colors.grey),
+          icon: Icon(Icons.lock_outline, color: Colors.grey),
           hintText: '确认密码',
           contentPadding: EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 10.0),
           border: UnderlineInputBorder(

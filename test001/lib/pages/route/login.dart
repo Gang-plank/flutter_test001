@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
           prefs.setString('userPhone', user.data.phone);
           prefs.setString('user', jsonEncode(user.data.toJson()));
           currentUser=user.data;
-          print(currentUser.username);
+          print(currentUser.toJson());
           /*  print(prefs.getString('user'));
           print(jsonDecode(prefs.getString('user')));
           UserData testm=UserData.fromJson(jsonDecode(prefs.getString('user')));

@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   Future _loginReq() async {
     Dio dio = Dio();
 
-    dio.options..baseUrl = 'http://10.0.3.2:5000';
+    dio.options..baseUrl = MY_API;
 
     try {
       // 发起请求

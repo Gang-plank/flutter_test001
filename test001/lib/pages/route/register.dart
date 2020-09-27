@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:test001/common/global.dart';
 import 'package:test001/config/models.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future _registerReq() async {
     Dio dio = Dio();
 
-    dio.options..baseUrl = 'http://10.0.3.2:5000';
+    dio.options..baseUrl = MY_API;
     try {
       // 发起请求
       Response response = await dio.post('/user/register',

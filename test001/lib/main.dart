@@ -46,7 +46,6 @@ class _MyAppState extends State<MyApp> {
       },
       title: 'Flutter Demo',
       theme: new ThemeData(primaryColor: Colors.white),
-      // home: phone == null ? BeginPage() : NavigationBar()
     );
   }
 }

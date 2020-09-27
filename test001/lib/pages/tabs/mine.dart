@@ -1,9 +1,7 @@
-import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test001/common/global.dart';
-import 'package:test001/config/models.dart';
 import '../route/my_Info.dart';
 import '../route/history.dart';
 
@@ -171,12 +169,19 @@ class _MinePageState extends State<MinePage> {
             padding: EdgeInsets.only(right: 20),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                "images/person.png", //用户头像
-                fit: BoxFit.cover,
-                height: 60,
-                width: 60,
-              ),
+              child: currentUser.avatar == null
+                  ? Image.asset(
+                      "images/default_avatar.png", //默认用户头像
+                      fit: BoxFit.cover,
+                      height: 60,
+                      width: 60,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: currentUser.avatar, //用户头像
+                      fit: BoxFit.cover,
+                      height: 60,
+                      width: 60,
+                    ),
             ),
           ),
           Column(

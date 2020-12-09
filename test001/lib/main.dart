@@ -10,8 +10,10 @@ import 'package:camera/camera.dart';
 
 Future<void> main() async {
   try {
+    //初始化部分
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
+    //验证登录部分
     SharedPreferences prefs = await SharedPreferences.getInstance();
     checkLogin = prefs.getString('userPhone');
     if (checkLogin != null) {
@@ -41,10 +43,11 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => checkLogin == null ? BeginPage() : NavigationBar(),
+        //'/':(context) => VoiceTestPage(),
         "/NavigationBar": (context) => NavigationBar(),
         "/BeginPage": (context) => BeginPage(),
       },
-      title: 'Flutter Demo',
+      title: '抑郁症测试',
       theme: new ThemeData(primaryColor: Colors.white),
     );
   }

@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:test001/common/global.dart';
-import '../../main.dart';
+import 'package:test001/main.dart';
 
 /// 获取不同摄像头的图标（前置、后置、其它）
 IconData getCameraLensIcon(CameraLensDirection direction) {
@@ -27,7 +27,6 @@ class CameraExampleHome extends StatefulWidget {
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver {
   CameraController controller;
-  String imagePath; // 图片保存路径
   String videoPath; //视频保存路径
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
@@ -65,12 +64,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('相机示例'),
+        title: Text('人脸测试'),
       ),
       body: Column(
         children: <Widget>[
-          Expanded(
-            child: Container(
+           Container(
+              height: 200,
               child: Padding(
                 padding: const EdgeInsets.all(1.0),
                 child: Center(
@@ -78,7 +77,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 ),
               ),
               decoration: BoxDecoration(
-                color: Colors.black,
+                //borderRadius: BorderRadius.circular(10000000),
+                color: Colors.white,
                 border: Border.all(
                   color: controller != null && controller.value.isRecordingVideo
                       ? Colors.redAccent
@@ -87,7 +87,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 ),
               ),
             ),
-          ),
           _captureControlRowWidget(),
           Padding(
             padding: const EdgeInsets.all(5.0),
@@ -106,10 +105,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// 展示预览窗口
   Widget _cameraPreviewWidget() {
     if (controller == null || !controller.value.isInitialized) {
-      return const Text(
-        '选择一个摄像头',
+      return Text(
+        '摄像头初始化失败',
         style: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 24.0,
           fontWeight: FontWeight.w900,
         ),
@@ -117,11 +116,38 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     } else {
       return AspectRatio(
         aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
+        child: Container(
+          color: Colors.white,
+          child: ClipOval(
+            child: CameraPreview(controller),
+          ),
+        ),
       );
+      /* return Container(
+        width: MediaQuery.of(context).size.width ,
+        height: MediaQuery.of(context).size.width,
+        color: Colors.white,
+        child: ClipOval(
+          child: CameraPreview(controller),
+        ),
+      ); */
+     /*  final size = MediaQuery.of(context).size;
+      final deviceRatio = size.width / size.height;
+      return ClipOval(
+        child: Container(
+          child: Transform.scale(
+            scale: controller.value.aspectRatio / deviceRatio,
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: controller.value.aspectRatio,
+                child: CameraPreview(controller),
+              ),
+            ),
+          ),
+        ),
+      ); */
     }
   }
-
 
   /// 相机工具栏
   Widget _captureControlRowWidget() {
@@ -133,8 +159,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              !controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo
               ? onVideoRecordButtonPressed
               : null,
         ),
@@ -142,8 +168,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.stop),
           color: Colors.red,
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
               ? onStopButtonPressed
               : null,
         )
@@ -212,7 +238,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       setState(() {});
     }
   }
-
 
   // 开始录制视频
   void onVideoRecordButtonPressed() {

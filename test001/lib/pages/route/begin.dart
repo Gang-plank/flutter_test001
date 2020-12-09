@@ -68,7 +68,6 @@ class _BeginPageState extends State<BeginPage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: buttons,
         )
-        
       ],
     );
   }
@@ -80,14 +79,17 @@ class _BeginPageState extends State<BeginPage> {
 
   @override
   Widget build(BuildContext context) {
-    var bodyMain = new Container(
-      decoration: BoxDecoration(
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('images/begin.png'), fit: BoxFit.cover)),
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-      child: body(),
+            image: AssetImage('assets/images/pilates.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+        child: body(),
+      ),
     );
-
-    return new Scaffold(body: bodyMain);
   }
 }

@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
         Fluttertoast.showToast(msg: '网络请求异常：${response.statusCode}');
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: "无网络连接");
+      Fluttertoast.showToast(msg: "服务出错，无网络连接");
     }
   }
 
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
           _login();
         },
         padding: EdgeInsets.all(12),
-        color: Colors.blue,
+        color: Colors.black,
         child: Text('登录', style: TextStyle(color: Colors.white)),
       ),
     );

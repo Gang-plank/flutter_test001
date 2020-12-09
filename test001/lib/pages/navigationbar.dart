@@ -27,10 +27,9 @@ class _NavigationBarState extends State<NavigationBar>{
       statusBarColor: Colors.transparent,
     ));
     return Scaffold(
-      appBar: AppBar(title: Text('demo')),
+      appBar: AppBar(title: Text('抑郁症测试')),
       body: WillPopScope(
-          onWillPop: () {
-            //导航返回拦截-----
+          onWillPop: () {               //导航返回拦截
             if (_lastPressedTime == null ||
                 DateTime.now().difference(_lastPressedTime) >
                     Duration(seconds: 1)) {
@@ -41,7 +40,7 @@ class _NavigationBarState extends State<NavigationBar>{
               return Future.value(false);
             }
             return Future.value(true);
-          }, //导航返回拦截-----
+          }, 
 
           child: PageView(
             //可滚动列表组件，默认横向
@@ -72,15 +71,15 @@ class _NavigationBarState extends State<NavigationBar>{
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              title: Text('home'),
+              title: Text('首页'),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.menu),
-              title: Text('test'),
+              title: Text('测试'),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              title: Text('me'),
+              title: Text('我'),
             )
           ]),
     );

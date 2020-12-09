@@ -8,6 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test001/common/global.dart';
 import 'package:test001/config/models.dart';
 
+/*等后端服务器还需要改很多
+用户默认头像的逻辑
+api的更改
+性别生日的debug
+*/
+
 class MyInfoPage extends StatefulWidget {
   @override
   _MyInfoPageState createState() => _MyInfoPageState();
@@ -19,7 +25,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
   TextEditingController _controllerPhone =
       new TextEditingController(text: currentUser.phone);
   TextEditingController _controllerGender =
-      new TextEditingController(text: currentUser.gender);
+      new TextEditingController(text: currentUser.gender==null?'保密':currentUser.gender);
   var date;
   File _image;
 
@@ -37,7 +43,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
           alignment: Alignment.topLeft,
           child: ClipOval(
             child: Image.asset(
-              'images/default_avatar.png',
+              'assets/images/default_avatar.png',
               width: 120,
               height: 120,
               fit: BoxFit.cover,
@@ -47,7 +53,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
         // 编辑头像图片放在右下方。
         alignment: Alignment.bottomRight,
         child: Image.asset(
-          'images/add.png',
+          'assets/images/add.png',
           fit: BoxFit.contain,
           height: 30.0,
         ),
@@ -98,6 +104,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
     Dio dio = Dio();
 
     dio.options..baseUrl = MY_API;
+
     try {
       // 发起请求
       Response response = await dio.post('/user/info',
@@ -140,7 +147,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
             padding: EdgeInsets.all(10),
             width: 120,
             height: 120,
-            child: _image == null ? defaultImage : ovalImage(_image),
+            child: defaultImage, //_image == null ? defaultImage : ovalImage(_image),  
           ),
         )
       ],
@@ -211,7 +218,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
             )),
             Container(
                 child: Text(
-              currentUser.birthday == 'null' ? '点击以设置' : currentUser.birthday,
+              currentUser.birthday == null ? '保密' : currentUser.birthday,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 16,

@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:test001/common/global.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -6,80 +8,70 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.maxFinite,
-        padding: EdgeInsets.all(10),
-        child: Card(
-            child: Text(
-          '日期  分数',
-          style: TextStyle(fontSize: 20),
-        )),
-      ),
-    );
-  }
-}
-
-/* 
-class _HistoryPageState extends State<HistoryPage> {
-  static const loadingTag = "##loading##"; //表尾标记
-  var _words = <String>[loadingTag];
-
+  List dataList;
   @override
   void initState() {
     super.initState();
-    _retrieveData();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: _words.length,
-      itemBuilder: (context, index) {
-        //如果到了表尾
-        if (_words[index] == loadingTag) {
-          //不足100条，继续获取数据
-          if (_words.length - 1 < 100) {
-            //获取数据
-            _retrieveData();
-            //加载时显示loading
-            return Container(
-              padding: const EdgeInsets.all(16.0),
-              alignment: Alignment.center,
-              child: SizedBox(
-                  width: 24.0,
-                  height: 24.0,
-                  child: CircularProgressIndicator(strokeWidth: 2.0)
-              ),
-            );
-          } else {
-            //已经加载了100条数据，不再获取数据。
-            return Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.all(16.0),
-                child: Text("没有更多了", style: TextStyle(color: Colors.grey),)
-            );
-          }
-        }
-        //显示单词列表项
-        return ListTile(title: Text(_words[index]));
-      },
-      separatorBuilder: (context, index) => Divider(height: .0),
-    );
-  }
-
-  void _retrieveData() {
-    Future.delayed(Duration(seconds: 2)).then((e) {
+    getHistoryData().then((value) {
       setState(() {
-        //重新构建列表
-        _words.insertAll(_words.length - 1,
-          //每次生成20个单词
-          generateWordPairs().take(20).map((e) => e.asPascalCase).toList()
-          );
+        dataList = value['data'].toList();
       });
     });
   }
 
-} */
+  Future getHistoryData() async {
+    Dio dio = Dio();
+    dio.options..baseUrl = MY_API;
+    try {
+      Response response = await dio
+          .get('/testdata', queryParameters: {'phone': currentUser.phone});
+      return response.data;
+    } catch (e) {
+      return print(e);
+    }
+  }
+
+  Widget _listWidget() {
+    List<Widget> _tiles = []; //先建一个数组用于存放循环生成的widget
+    for (var item in dataList) {
+      _tiles.add(
+        new Column(
+          children: <Widget>[
+            Card(
+              margin: EdgeInsets.all(10),
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: Text(item['date'], style: TextStyle(fontSize: 28)),
+                    subtitle: Text(item['score']),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return Column(children: _tiles);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('历史记录'),
+      ),
+      body: dataList == null
+          ? Container(
+              alignment: Alignment.center,
+              child: Text(
+                "正在加载",
+                textAlign: TextAlign.center,
+              ),
+            )
+          : SingleChildScrollView(
+              child: _listWidget(),
+            ),
+    );
+  }
+}

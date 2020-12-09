@@ -150,7 +150,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _register();
         },
         padding: EdgeInsets.all(12),
-        color: Colors.blue,
+        color: Colors.black,
         child: Text('注册', style: TextStyle(color: Colors.white)),
       ),
     );

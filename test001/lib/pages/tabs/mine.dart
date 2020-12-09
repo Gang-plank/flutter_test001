@@ -1,5 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test001/common/global.dart';
 import '../route/my_Info.dart';
@@ -17,11 +21,11 @@ class MineApi {
   static List<MineModel> mock() {
     List<MineModel> _mineModels = [];
     _mineModels.add(MineModel(
-        assets: "images/person.png", title: "个人信息", isDownDivider: false));
+        assets: "assets/images/person.png", title: "个人信息", isDownDivider: false));
     _mineModels.add(MineModel(
-        assets: "images/history.png", title: "历史记录", isDownDivider: true));
+        assets: "assets/images/history.png", title: "历史记录", isDownDivider: true));
     _mineModels.add(MineModel(
-        assets: "images/exit.png", title: "退出登录", isDownDivider: true));
+        assets: "assets/images/exit.png", title: "退出登录", isDownDivider: true));
     return _mineModels;
   }
 }
@@ -169,19 +173,18 @@ class _MinePageState extends State<MinePage> {
             padding: EdgeInsets.only(right: 20),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: currentUser.avatar == null
-                  ? Image.asset(
-                      "images/default_avatar.png", //默认用户头像
+              child:Image.asset(
+                      "assets/images/default_avatar.png", //默认用户头像
                       fit: BoxFit.cover,
                       height: 60,
                       width: 60,
                     )
-                  : CachedNetworkImage(
-                      imageUrl: currentUser.avatar, //用户头像
+                  /*  CachedNetworkImage(
+                      imageUrl: currentUser.avatar, //用户头像  后端返回的地址不适用于本地服务器，上线后再修改
                       fit: BoxFit.cover,
                       height: 60,
                       width: 60,
-                    ),
+                    ), */
             ),
           ),
           Column(
@@ -215,3 +218,73 @@ class _MinePageState extends State<MinePage> {
     );
   }
 }
+
+
+
+
+  Future<Null> loadCache() async {
+    Directory tempDir = await getTemporaryDirectory();
+      double value = await _getTotalSizeOfFilesInDir(tempDir);
+      tempDir.list(followLinks: false,recursive: true).listen((file){
+          //打印每个缓存文件的路径
+        print(file.path);
+      });
+      print('临时目录大小: ' + value.toString());
+      String _cacheSizeStr = _renderSize(value);
+      print(_cacheSizeStr);
+      /* setState(() {
+        _cacheSizeStr = _renderSize(value);  // _cacheSizeStr用来存储大小的值
+      }); */
+  }
+
+    Future<double> _getTotalSizeOfFilesInDir(final FileSystemEntity file) async {
+    if (file is File) {
+         int length = await file.length();
+         return double.parse(length.toString());
+    }
+   if (file is Directory) {
+         final List<FileSystemEntity> children = file.listSync();
+         double total = 0;
+         if (children != null)
+              for (final FileSystemEntity child in children)
+                total += await _getTotalSizeOfFilesInDir(child);
+         return total;
+      }
+      return 0;
+  }
+
+    _renderSize(double value) {
+    if (null == value) {
+      return 0;
+    }
+    List<String> unitArr = List()
+      ..add('B')
+      ..add('K')
+      ..add('M')
+      ..add('G');
+    int index = 0;
+    while (value > 1024) {
+      index++;
+      value = value / 1024;
+    }
+    String size = value.toStringAsFixed(2);
+    return size + unitArr[index];
+  }
+
+  void _clearCache() async {
+    Directory tempDir = await getTemporaryDirectory();
+      //删除缓存目录
+      await delDir(tempDir);
+      await loadCache();
+      Fluttertoast.showToast(msg: '清除缓存成功');
+  }
+  ///递归方式删除目录
+  Future<Null> delDir(FileSystemEntity file) async {
+    if (file is Directory) {
+            final List<FileSystemEntity> children = file.listSync();
+            for (final FileSystemEntity child in children) {
+              await delDir(child);
+            }
+          }
+      await file.delete();
+  }

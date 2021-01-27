@@ -12,9 +12,9 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    getHistoryData().then((value) {
+    getHistoryData().then((v) {
       setState(() {
-        dataList = value['data'].toList();
+        dataList = v['data'].toList();
       });
     });
   }
@@ -23,8 +23,10 @@ class _HistoryPageState extends State<HistoryPage> {
     Dio dio = Dio();
     dio.options..baseUrl = MY_API;
     try {
-      Response response = await dio
-          .get('/testdata', queryParameters: {'phone': currentUser.phone});
+      Response response = await dio.post('/testHistory',
+          data: FormData.fromMap({
+            "phone": currentUser.phone,
+          }));
       return response.data;
     } catch (e) {
       return print(e);
@@ -35,20 +37,16 @@ class _HistoryPageState extends State<HistoryPage> {
     List<Widget> _tiles = []; //先建一个数组用于存放循环生成的widget
     for (var item in dataList) {
       _tiles.add(
-        new Column(
-          children: <Widget>[
-            Card(
-              margin: EdgeInsets.all(10),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(item['date'], style: TextStyle(fontSize: 28)),
-                    subtitle: Text(item['score']),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        new Card(
+          margin: EdgeInsets.all(10), //卡片间距
+          child: Container(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('测试时间：'+item['testDate'], style: TextStyle(fontSize: 15)),
+                    Text('测试结果：'+item['score'], style: TextStyle(fontSize: 15)),
+                  ])),
         ),
       );
     }
@@ -65,7 +63,7 @@ class _HistoryPageState extends State<HistoryPage> {
           ? Container(
               alignment: Alignment.center,
               child: Text(
-                "正在加载",
+                "正在加载...",
                 textAlign: TextAlign.center,
               ),
             )

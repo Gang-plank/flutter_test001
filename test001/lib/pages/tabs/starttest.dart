@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test001/common/global.dart';
-import 'package:test001/pages/route/voice_test.dart';
-import '../route/video_test.dart';
+import 'package:test001/pages/route/questionTest.dart';
+import 'package:test001/pages/route/pictureTest.dart';
 
 class StartTestPage extends StatefulWidget {
   @override
@@ -20,11 +19,12 @@ class _StartTestPageState extends State<StartTestPage> {
             shape: CircleBorder(),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Icon(Icons.mic, color: Colors.white, size: 28.0),
+              child:
+                  Icon(Icons.question_answer, color: Colors.white, size: 28.0),
             ),
           ),
           Padding(padding: EdgeInsets.only(bottom: 10.0)),
-          Text('语音测试',
+          Text('问答测试',
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w500,
@@ -34,23 +34,24 @@ class _StartTestPageState extends State<StartTestPage> {
   final videoTestButton = Padding(
     padding: const EdgeInsets.all(24.0),
     child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Material(
-              color: Colors.teal,
-              shape: CircleBorder(),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Icon(Icons.face, color: Colors.white, size: 28.0),
-              )),
-          Padding(padding: EdgeInsets.only(bottom: 16.0)),
-          Text('人脸测试',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 18.0)),
-        ]),
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Material(
+            color: Colors.teal,
+            shape: CircleBorder(),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Icon(Icons.panorama, color: Colors.white, size: 28.0),
+            )),
+        Padding(padding: EdgeInsets.only(bottom: 16.0)),
+        Text(
+          '图片测试',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w500, fontSize: 18.0),
+        ),
+      ],
+    ),
   );
   @override
   Widget build(BuildContext context) {
@@ -58,16 +59,16 @@ class _StartTestPageState extends State<StartTestPage> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Container(
-            height: size.height * 0.46,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              // image: DecorationImage(
-              //   alignment: Alignment.centerLeft,
-              //   image: AssetImage('assets/images/pilates.png'),
-              // ),
-            ),
-          ),
+          // Container(
+          //   height: size.height * 0.46,
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     image: DecorationImage(
+          //       alignment: Alignment.centerLeft,
+          //       image: AssetImage('assets/images/pilates.png'),
+          //     ),
+          //   ),
+          // ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,9 +105,9 @@ class _StartTestPageState extends State<StartTestPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Material(
-                    elevation: 10.0,
+                    elevation: 1.0,
                     borderRadius: BorderRadius.circular(12.0),
-                    shadowColor: Colors.teal,
+                    shadowColor: Colors.blueAccent,
                     child: InkWell(
                       child: voiceTestButton,
                       onTap: () {
@@ -114,7 +115,7 @@ class _StartTestPageState extends State<StartTestPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return VoiceTestPage();
+                              return QuestionTestPage();
                             },
                           ),
                         );
@@ -122,15 +123,15 @@ class _StartTestPageState extends State<StartTestPage> {
                     ),
                   ),
                   Material(
-                    elevation: 14.0,
+                    elevation: 1.0,
                     borderRadius: BorderRadius.circular(12.0),
-                    shadowColor: Colors.teal,
+                    shadowColor: Colors.blueAccent,
                     child: InkWell(
                       child: videoTestButton,
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return CameraExampleHome();
+                          return PictureTestPage();
                         }));
                       },
                     ),

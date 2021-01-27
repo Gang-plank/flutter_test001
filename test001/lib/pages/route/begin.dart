@@ -17,9 +17,9 @@ class _BeginPageState extends State<BeginPage> {
           //为什么要设置左右padding，因为如果不设置，那么会挤压文字空间
           padding: EdgeInsets.symmetric(horizontal: 8),
           //文字颜色
-          textColor: Colors.black87,
+          textColor: Colors.white,
           //按钮颜色
-          color: Colors.blueGrey,
+          color: Colors.black,
           //画圆角
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
@@ -31,7 +31,7 @@ class _BeginPageState extends State<BeginPage> {
           })),
           child: Text(
             '登录',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),
           ),
         ),
       ),
@@ -42,9 +42,9 @@ class _BeginPageState extends State<BeginPage> {
           //为什么要设置左右padding，因为如果不设置，那么会挤压文字空间
           padding: EdgeInsets.symmetric(horizontal: 8),
           //文字颜色
-          textColor: Colors.black87,
+          textColor: Colors.white,
           //按钮颜色
-          color: Colors.blueGrey,
+          color: Colors.black,
           //画圆角
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
@@ -55,7 +55,7 @@ class _BeginPageState extends State<BeginPage> {
           })),
           child: Text(
             '注册',
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontWeight: FontWeight.w600,fontSize: 24),
           ),
         ),
       ),
@@ -83,7 +83,7 @@ class _BeginPageState extends State<BeginPage> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/pilates.png'),
+            image: AssetImage('assets/images/begin.png'),
             fit: BoxFit.cover,
           ),
         ),

@@ -3,10 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test001/common/global.dart';
-import 'package:test001/config/models.dart';
+import 'package:test001/common/models.dart';
+import 'package:test001/pages/route/history.dart';
+import 'package:test001/pages/route/questionTest.dart';
+import 'package:test001/pages/route/result.dart';
+import 'package:test001/pages/route/pictureTest.dart';
 import 'pages/navigationbar.dart';
 import 'pages/route/begin.dart';
 import 'package:camera/camera.dart';
+
 
 Future<void> main() async {
   try {
@@ -43,7 +48,10 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => checkLogin == null ? BeginPage() : NavigationBar(),
-        //'/':(context) => VoiceTestPage(),
+        //'/':(context) => QuestionTestPage(),
+        //'/':(context) => HistoryPage(), 
+        //'/':(context) => ResultPage(),
+
         "/NavigationBar": (context) => NavigationBar(),
         "/BeginPage": (context) => BeginPage(),
       },

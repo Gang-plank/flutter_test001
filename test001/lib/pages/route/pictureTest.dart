@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -12,29 +13,34 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:test001/common/global.dart';
 import 'package:test001/common/questionData.dart';
 
+import 'package:camera/camera.dart';
+import 'package:test001/main.dart';
+import 'package:test001/pages/route/result.dart';
+
 enum RecordPlayState {
   record,
   recording,
+  finished,
   play,
   playing,
 }
 
-class VoiceTestPage extends StatefulWidget {
-  VoiceTestPage({Key key}) : super(key: key);
+class PictureTestPage extends StatefulWidget {
   @override
-  _VoiceTestPageState createState() => _VoiceTestPageState();
+  _PictureTestPageState createState() => _PictureTestPageState();
 }
 
-class _VoiceTestPageState extends State<VoiceTestPage> {
+class _PictureTestPageState extends State<PictureTestPage>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  /*-----------------声明变量-----------------------------*/
+  AnimationController _animatedController;
   RecordPlayState _state = RecordPlayState.record;
 
   StreamSubscription _recorderSubscription;
   StreamSubscription _playerSubscription;
 
-  // StreamSubscription _dbPeakSubscription;
   FlutterSoundRecorder flutterSound;
-  String _recorderTxt = '00:00:00';
-  // String _playerTxt = '00:00:00';
+  String _recorderTxt = '00:00';
 
   double _dbLevel = 0.0;
   FlutterSoundRecorder recorderModule = FlutterSoundRecorder();
@@ -46,13 +52,31 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
   var size;
   var _question = "即将开始测试";
   var _rndNum;
-  //var _testResult;
 
+  CameraController controller;
+  String videoPath; //视频保存路径
+  VoidCallback videoPlayerListener;
+  Future<void> _initializeControllerFuture;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
+
+  /*---------------------------@override  initState-----------------------*/
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     init();
     _getQuestionData();
+    // 监听APP状态改变，是否在前台
+    controller =
+        CameraController(cameras[1], ResolutionPreset.max, enableAudio: false);
+    _initializeControllerFuture = controller.initialize();
+
+    _animatedController = AnimationController(vsync: this)
+      ..drive(Tween(begin: 0, end: 1))
+      ..duration = Duration(milliseconds: 300);
   }
 
   Future<void> _initializeExample(bool withUI) async {
@@ -85,70 +109,201 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
     _cancelRecorderSubscriptions();
     _cancelPlayerSubscriptions();
     _releaseFlauto();
+    WidgetsBinding.instance.removeObserver(this);
+    controller?.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 如果APP不在在前台
+    if (state == AppLifecycleState.inactive) {
+      controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      // 在前台
+
+    }
+  }
+
+/*----------------------------------Widget build--------------------*/
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            '语音测试',
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(
+          '图片测试',
+        ),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _pictureShow(),
+          Container(
+            height: size.height * 0.3,
+            child: Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: Center(
+                child: FutureBuilder<void>(
+                  future: _initializeControllerFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      // If the Future is complete, display the preview
+                      return _cameraPreviewWidget();
+                    } else {
+                      // Otherwise, display a loading indicator
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+          _timeShow(),
+          Container(
+            padding: EdgeInsets.fromLTRB(15, 0, 15, 15),
+            child: _actionShow(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /*---------------------------------------录像-------------------------------------*/
+  /// 展示预览窗口
+  Widget _cameraPreviewWidget() {
+    if (controller == null || !controller.value.isInitialized) {
+      print(controller);
+      print(controller.value.isInitialized);
+      return Text(
+        '摄像头初始化失败',
+        style: TextStyle(
+          color: Colors.tealAccent,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),
+      );
+    } else {
+      return AspectRatio(
+        aspectRatio: 1,
+        child: ClipOval(
+          child: Transform.scale(
+            scale: 1 / controller.value.aspectRatio,
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: controller.value.aspectRatio,
+                child: CameraPreview(controller),
+              ),
+            ),
           ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _questionShow(),
-            Column(
-              children: [
-                _timeShow(),
-                SizedBox(height: 60,),
-                Container(
-                  padding: EdgeInsets.fromLTRB(15, 0, 15, 15),
-                  child: _actionShow(),
-                ),
-              ],
-            )
-          ],
-        ));
+      );
+    }
   }
 
-  _getQuestionData() {
-    _rndNum = Random().nextInt(14) + 1;
-    _question = questionData[_rndNum];
+  //定义showInSnackBar
+  // void showInSnackBar(String message) {
+  //   _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
+  // }
+
+  // 开始录制视频
+  void onVideoRecordButtonPressed() {
+    startVideoRecording().then((String filePath) {
+      if (mounted) setState(() {});
+      //if (filePath != null) showInSnackBar('正在保存视频于 $filePath');
+    });
   }
 
-  Widget _questionShow() {
+  // 终止视频录制
+  void onStopButtonPressed() {
+    stopVideoRecording().then((_) {
+      if (mounted) setState(() {});
+      //showInSnackBar('视频保存在: $videoPath');
+    });
+  }
+
+  //开始录像
+  Future<String> startVideoRecording() async {
+    if (!controller.value.isInitialized) {
+      //showInSnackBar('摄像头获取失败');
+      return null;
+    }
+
+    // 确定视频保存的路径
+    final Directory extDir = await getApplicationDocumentsDirectory();
+    final String dirPath = '${extDir.path}/Movies/flutter_test';
+    await Directory(dirPath).create(recursive: true);
+    final String filePath = '$dirPath/${timestamp()}.mp4';
+
+    if (controller.value.isRecordingVideo) {
+      // 如果正在录制，则直接返回
+      return null;
+    }
+
+    try {
+      videoPath = filePath;
+      await controller.startVideoRecording(filePath);
+    } on CameraException catch (e) {
+      //_showCameraException(e);
+      print(e);
+      return null;
+    }
+    return filePath;
+  }
+
+  //停止录像
+  Future<void> stopVideoRecording() async {
+    if (!controller.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await controller.stopVideoRecording();
+    } on CameraException catch (e) {
+      //_showCameraException(e);
+      return null;
+    }
+  }
+
+  //相机出错showInSnackBar
+  // void _showCameraException(CameraException e) {
+  //   logError(e.code, e.description);
+  //   showInSnackBar('Error: ${e.code}\n${e.description}');
+  // }
+
+  //展示图片
+  Widget _pictureShow() {
     return Container(
       height: 200,
       width: size.width,
-      color: Colors.white,
       child: Center(
-        child: Text(
-          _question,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20),
+        child: Image.asset(
+          "assets/images/test.jpg", //默认用户头像
+          fit: BoxFit.fill,
         ),
       ),
     );
   }
 
+  //初始化问题
+  _getQuestionData() {
+    _rndNum = Random().nextInt(14) + 1;
+    _question = questionData[_rndNum];
+  }
+
+  //显示时间
   Widget _timeShow() {
     return Column(
       children: [
         Container(
           width: double.maxFinite,
-          height: 60, //ScreenUtil().setHeight(120),
+          height: 60, 
           alignment: Alignment.center,
           child: Text(
-            _recorderTxt,
+            _recorderTxt.substring(0, 5),
             style: TextStyle(fontSize: 24, color: Colors.black),
           ),
-        ),
-        SizedBox(
-          height: 30, //ScreenUtil().setHeight(60)
         ),
         CustomPaint(
           size: Size(double.maxFinite, 50),
@@ -159,6 +314,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
     );
   }
 
+  //显示控制按钮
   Widget _actionShow() {
     var _width = size.width - 30; //container的宽度在上面以指明距离设备宽度是15，所以这里是30
     var _height = _width * 0.2;
@@ -177,23 +333,18 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
             children: [
               Offstage(
                 //重录按钮，用offstage判断显示
-                offstage: _state == RecordPlayState.play ||
-                        _state == RecordPlayState.playing
-                    ? false
-                    : true,
+                offstage: _state == RecordPlayState.finished ? false : true,
                 child: InkWell(
                   onTap: () {
-                    setState(() async {
+                    setState(() {
                       _state = RecordPlayState.record;
                       _path = "";
-                      _recorderTxt = "00:00:00";
+                      _recorderTxt = "00:00";
                       _dbLevel = 0.0;
-                      await _stopPlayer();
-                      _state = RecordPlayState.record;
                     });
                   },
                   child: Container(
-                    width: _width / 3,
+                    width: _width / 2,
                     padding: EdgeInsets.all(1),
                     child: Column(
                       children: <Widget>[
@@ -214,78 +365,83 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
                   ),
                 ),
               ),
-              InkWell(
-                //三个按钮中间的一个
-                onTap: () {
-                  if (_state == RecordPlayState.record) {
-                    _startRecorder();
-                  } else if (_state == RecordPlayState.recording) {
-                    _stopRecorder();
-                  } else if (_state == RecordPlayState.play) {
-                    _startPlayer();
-                  } else if (_state == RecordPlayState.playing) {
-                    _pauseResumePlayer();
-                  }
-                },
-                child: Container(
-                  width: _width / 3,
-                  padding: EdgeInsets.all(1),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Icon(
-                          _state == RecordPlayState.record
-                              ? Icons.mic
-                              : _state == RecordPlayState.recording
-                                  ? Icons.settings_voice
-                                  : _state == RecordPlayState.play
-                                      ? Icons.play_circle_outline
-                                      : Icons.pause_circle_outline,
-                          color: Colors.white,
-                          size: 30.0,
+              Offstage(
+                offstage: _state == RecordPlayState.finished ? true : false,
+                child: InkWell(
+                  //三个按钮中间的一个
+                  onTap: () {
+                    if (_state == RecordPlayState.record &&
+                        controller != null &&
+                        controller.value.isInitialized &&
+                        !controller.value.isRecordingVideo) {
+                      _startRecorder();
+                      _animatedController.forward();
+                    } else if (_state == RecordPlayState.recording) {
+                      _stopRecorder();
+                      _animatedController.reverse();
+                    }
+                  },
+                  child: Container(
+                    width: _width / 2,
+                    padding: EdgeInsets.all(1),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: AnimatedIcon(
+                            icon: AnimatedIcons.play_pause,
+                            progress: _animatedController,
+                            color: Colors.white,
+                            size: 30.0,
+                          ),
                         ),
-                      ),
-                      Container(
-                        width: _width / 3,
-                        alignment: Alignment.center,
-                        child: Text(
-                          _state == RecordPlayState.record
-                              ? "录音"
-                              : _state == RecordPlayState.recording
-                                  ? "结束"
-                                  : _state == RecordPlayState.play
-                                      ? "播放"
-                                      : "暂停",
-                          style: TextStyle(fontSize: 15, color: Colors.white),
+                        Container(
+                          width: _width / 2,
+                          alignment: Alignment.center,
+                          child: Text(
+                            _state == RecordPlayState.record ? "开始" : "结束",
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
               Offstage(
                 //完成按钮，用offstage判断显示
-                offstage: _state == RecordPlayState.play ||
-                        _state == RecordPlayState.playing
-                    ? false
-                    : true,
+                offstage: _state == RecordPlayState.finished ? false : true,
                 child: InkWell(
                   onTap: () {
-                    showLoadingDialog(); //showloading框
-                    _voiceUpload().then((testResult) async {
-                      //发送请求
-                      Navigator.of(context).pop(); //pop掉loading框
-                      bool t=await showResultDialog(testResult);
-                      print(t);
-                      if (t == true) //显示测试结果
-                        setState(() {
-                          _rndNum = Random().nextInt(15) + 1;
-                          _question = questionData[_rndNum];
-                        });
+                    // showLoadingDialog(); //showloading框
+                    // _voiceUpload().then((testResult) async {
+                    //   //发送请求
+                    //   Navigator.of(context).pop(); //pop掉loading框
+                    //   bool t = await showResultDialog(testResult);//显示测试结果
+                    //   print(t);
+                    //   if (t == true)
+                    //     setState(() {
+                    //       _getQuestionData();
+                    //     });
+                    // });
+                    showLoadingDialog(); //showloading框    }
+                    _voiceUpload().then((testResult) {
+                      if (testResult == null) {
+                        Navigator.of(context).pop(); //pop掉loading框
+                        Fluttertoast.showToast(msg: '服务器出错');
+                      } else {
+                        Navigator.of(context).pop(); //pop掉loading框
+                        Navigator.of(context).pushReplacement(
+                          //push 结果，替换路由栈
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ResultPage(result: testResult),
+                          ),
+                        );
+                      }
                     });
                   },
                   child: Container(
-                    width: _width / 3,
+                    width: _width / 2,
                     padding: EdgeInsets.all(1),
                     child: Column(
                       children: <Widget>[
@@ -297,7 +453,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
                           ),
                         ),
                         Container(
-                          width: _width / 3,
+                          width: _width / 2,
                           alignment: Alignment.center,
                           child: Text(
                             "完成",
@@ -320,7 +476,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
   showLoadingDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, //点击遮罩不关闭对话框
+      //barrierDismissible: false, //点击遮罩不关闭对话框
       builder: (context) {
         return AlertDialog(
           content: Column(
@@ -340,19 +496,20 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
     );
   }
 
-  ///网络请求
+  //网络请求
   Future _voiceUpload() async {
     Dio dio = new Dio();
     dio.options..baseUrl = MY_API;
 
     Map<String, dynamic> map = Map();
-    map["tPhone"] = currentUser.phone;
+    map["testPhone"] = currentUser.phone;
     map["voiceFile"] = await MultipartFile.fromFile(_path);
+    map["videoFile"] = await MultipartFile.fromFile(videoPath);
     FormData formData = FormData.fromMap(map);
 
     try {
       Response response = await dio.post(
-        '/voiceTest', data: formData,
+        '/questionTest', data: formData,
 
         ///这里是发送请求回调函数
         ///[progress] 当前的进度
@@ -363,7 +520,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
         },
       );
       //_testResult= response.data;
-      return response.data['data'];
+      return response.data;
     } catch (e) {
       print(e);
     }
@@ -383,9 +540,6 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-
-
-              
             ),
           ],
         );
@@ -393,9 +547,12 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
     );
   }
 
+/*------------------------------------录音-------------------------------------------*/
   /// 开始录音
   _startRecorder() async {
     try {
+      await _initializeControllerFuture;
+      onVideoRecordButtonPressed();
       await PermissionHandler()
           .requestPermissions([PermissionGroup.microphone]);
       PermissionStatus status = await PermissionHandler()
@@ -415,7 +572,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
         toFile: path,
         codec: Codec.pcm16WAV,
         bitRate: 16000,
-        sampleRate: 16000,  //模型要求采样率为16000
+        sampleRate: 16000, //模型要求采样率为16000
       );
       print('===>  开始录音');
 
@@ -430,7 +587,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
             _stopRecorder();
           }
           setState(() {
-            _recorderTxt = txt.substring(0, 8);
+            _recorderTxt = txt.substring(0, 5);
             _dbLevel = e.decibels;
             print("当前振幅：$_dbLevel");
           });
@@ -446,6 +603,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
         _stopRecorder();
         _state = RecordPlayState.record;
         _cancelRecorderSubscriptions();
+        print(err);
       });
     }
   }
@@ -453,6 +611,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
   /// 结束录音
   _stopRecorder() async {
     try {
+      onStopButtonPressed();
       await recorderModule.stopRecorder();
       print('stopRecorder');
       _cancelRecorderSubscriptions();
@@ -462,7 +621,7 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
     }
     setState(() {
       _dbLevel = 0.0;
-      _state = RecordPlayState.play;
+      _state = RecordPlayState.finished;
     });
   }
 
@@ -521,82 +680,9 @@ class _VoiceTestPageState extends State<VoiceTestPage> {
     print(_recorderTxt);
     setState(() {});
   }
-
-  /// 开始播放
-  Future<void> _startPlayer() async {
-    try {
-      if (await _fileExists(_path)) {
-        await playerModule.startPlayer(
-            fromURI: _path,
-            codec: Codec.pcm16WAV,
-            whenFinished: () {
-              print('==> 结束播放');
-              _stopPlayer();
-              setState(() {});
-            });
-      } else {
-        EasyLoading.showToast("未找到文件路径");
-        throw RecordingPermissionException("未找到文件路径");
-      }
-
-      _cancelPlayerSubscriptions();
-      _playerSubscription = playerModule.onProgress.listen((e) {
-        if (e != null) {
-          // print("${e.duration} -- ${e.position} -- ${e.duration.inMilliseconds} -- ${e.position.inMilliseconds}");
-          // DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-          //     e.position.inMilliseconds,
-          //     isUtc: true);
-          // String txt = DateFormat('mm:ss:SS', 'en_GB').format(date);
-
-          // this.setState(() {
-          // this._playerTxt = txt.substring(0, 8);
-          // });
-        }
-      });
-      setState(() {
-        _state = RecordPlayState.playing;
-      });
-      print('===> 开始播放');
-    } catch (err) {
-      print('==> 错误: $err');
-    }
-    setState(() {});
-  }
-
-  /// 结束播放
-  Future<void> _stopPlayer() async {
-    try {
-      await playerModule.stopPlayer();
-      print('===> 结束播放');
-      _cancelPlayerSubscriptions();
-    } catch (err) {
-      print('==> 错误: $err');
-    }
-    setState(() {
-      _state = RecordPlayState.play;
-    });
-  }
-
-  /// 暂停/继续播放
-  void _pauseResumePlayer() {
-    if (playerModule.isPlaying) {
-      playerModule.pausePlayer();
-      _state = RecordPlayState.play;
-      print('===> 暂停播放');
-    } else {
-      playerModule.resumePlayer();
-      _state = RecordPlayState.playing;
-      print('===> 继续播放');
-    }
-    setState(() {});
-  }
-
-  /// 判断文件是否存在
-  Future<bool> _fileExists(String path) async {
-    return await File(path).exists();
-  }
 }
 
+/*---------------------------------------------------------------------------------------*/
 class LCPainter extends CustomPainter {
   final double amplitude;
   final int number;
@@ -606,7 +692,7 @@ class LCPainter extends CustomPainter {
     var centerY = 0.0;
     var width = size.width / number;
 
-    for (var a = 0; a < 4; a++) {
+    for (var a = 0; a < 1; a++) {
       var path = Path();
       path.moveTo(0.0, centerY);
       var i = 0;
@@ -620,7 +706,7 @@ class LCPainter extends CustomPainter {
       canvas.drawPath(
           path,
           Paint()
-            ..color = a == 0 ? Colors.teal : Colors.blueGrey.withAlpha(50)
+            ..color = a == 0 ? Colors.blue : Colors.grey.withAlpha(50)
             ..strokeWidth = a == 0 ? 3.0 : 2.0
             ..maskFilter = MaskFilter.blur(
               BlurStyle.solid,

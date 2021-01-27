@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test001/common/global.dart';
-import 'package:test001/config/models.dart';
+import 'package:test001/common/models.dart';
 
 /*等后端服务器还需要改很多
 用户默认头像的逻辑
@@ -42,13 +43,13 @@ class _MyInfoPageState extends State<MyInfoPage> {
           // 默认头像图片放在左上方。
           alignment: Alignment.topLeft,
           child: ClipOval(
-            child: Image.asset(
-              'assets/images/default_avatar.png',
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
-            ),
-          )),
+            child: CachedNetworkImage(
+                      imageUrl: currentUser.avatar,
+                      fit: BoxFit.cover,
+                      height: 120,
+                      width: 120,
+                    ), 
+          ),),
       Align(
         // 编辑头像图片放在右下方。
         alignment: Alignment.bottomRight,

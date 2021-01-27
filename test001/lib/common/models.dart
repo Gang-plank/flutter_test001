@@ -51,3 +51,52 @@ class UserData {
 
 	};
 }
+
+class TestEntity {
+	TestData data;
+	int errorCode;
+	String errorMsg;
+
+	TestEntity({this.data, this.errorCode, this.errorMsg});
+
+	TestEntity.fromJson(Map<String, dynamic> json) {
+		data = json['data'] != null ? new TestData.fromJson(json['data']) : null;
+		errorCode = json['errorCode'];
+		errorMsg = json['errorMsg'];
+	}
+
+	Map<String, dynamic> toJson() {
+		final Map<String, dynamic> data = new Map<String, dynamic>();
+		if (this.data != null) {
+      data['data'] = this.data.toJson();
+    }
+		data['errorCode'] = this.errorCode;
+		data['errorMsg'] = this.errorMsg;
+		return data;
+	}
+}
+
+
+class TestData {
+	String tPhone;
+  String score;
+  String testDate;
+  String testType;
+
+
+	TestData(this.score,this.testDate,this.testType);
+
+	TestData.fromJson(Map<String, dynamic> json) {
+		tPhone = json['tPhone'];
+		score = json['score'];
+    testDate=json['testDate'];
+    testType=json['testType'];
+	}
+
+	Map<String, dynamic> toJson() =>{
+    'tPhone':tPhone,
+    'score':score,
+    'testDate':testDate,
+    'testType':testType,
+	};
+}

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test001/common/global.dart';
-import 'package:test001/config/models.dart';
+import 'package:test001/common/models.dart';
 
 
 

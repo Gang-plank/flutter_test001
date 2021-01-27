@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
@@ -173,18 +174,13 @@ class _MinePageState extends State<MinePage> {
             padding: EdgeInsets.only(right: 20),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child:Image.asset(
-                      "assets/images/default_avatar.png", //默认用户头像
+              child:
+                   CachedNetworkImage(
+                      imageUrl: currentUser.avatar,
                       fit: BoxFit.cover,
                       height: 60,
                       width: 60,
-                    )
-                  /*  CachedNetworkImage(
-                      imageUrl: currentUser.avatar, //用户头像  后端返回的地址不适用于本地服务器，上线后再修改
-                      fit: BoxFit.cover,
-                      height: 60,
-                      width: 60,
-                    ), */
+                    ), 
             ),
           ),
           Column(
